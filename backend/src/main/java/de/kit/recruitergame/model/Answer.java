@@ -19,7 +19,6 @@ public class Answer {
     @ManyToOne
     private Question question;
 
-    private boolean recruiterAnswer;
 
     public Answer() {}
 
@@ -28,14 +27,6 @@ public class Answer {
         this.text = text;
         this.question = question;
         this.isCorrect=isCorrect;
-    }
-
-    public boolean isRecruiterAnswer() {
-        return recruiterAnswer;
-    }
-
-    public void setRecruiterAnswer(boolean recruiterAnswer) {
-        this.recruiterAnswer = recruiterAnswer;
     }
 
     public boolean isCorrect() {

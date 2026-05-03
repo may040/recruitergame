@@ -72,6 +72,10 @@ const result = reactive([false, false, false, false, false])
 const recruiter = reactive({ name: "", company: "", id: null })
 const isrecruiterDataSaved = ref(false)
 const color = reactive(["gray", "gray", "gray", "gray", "gray"])
+const areQesAnswered = ref(false)
+//Parallel structure
+const selectedAnswer = reactive([[], [], [], [], []])
+let qesTest = ref([])
 
 async function saveRecruiterData() {
   isrecruiterDataSaved.value = !isrecruiterDataSaved.value
@@ -81,7 +85,8 @@ async function saveRecruiterData() {
       company: recruiter.company
     })
     recruiter.id = res.data
-    getQuestions()
+    qesTest.value = await getQuestions()
+    console.log(qesTest.value)
 
   } catch (error) {
     console.log(error)
@@ -91,17 +96,18 @@ async function saveRecruiterData() {
 
 async function getQuestions() {
   try {
-    const res = await axios.get(`http://localhost:8080/r/${recruiter.id}`)
-    console.log(res.data)
+    let res = await axios.get(`http://localhost:8080/r/${recruiter.id}`)
+    return res.data
   } catch (error) {
-
+    console.log(error)
+    return null
   }
 }
 
 
 
 function showResult() {
-  questions.map(q => q.isAnswered = true)
+  areQesAnswered.value = true
   evaCheckedAnswers()
 }
 
@@ -140,14 +146,14 @@ function evaCheckedAnswers() {
 
     </div>
     <div class="questions" v-show="isrecruiterDataSaved">
-      <div class="question" v-for="(qes, index) in questions" :style="{ backgroundColor: color[index] }" :key="index">
-        <p>{{ qes.question }}</p>
+      <div class="question" v-for="(qes, index) in qesTest" :style="{ backgroundColor: color[index] }" :key="index">
+        <p>{{ qes.text }}</p>
         <p>{{ qes.points }}</p>
         <div class="answers" v-for="(answer, i) in qes.answers" :key="i">
-          <input type="checkbox" :disabled="qes.isAnswered" :value="answer.answer" v-model="qes.selected">{{
-            answer.answer }}</input>
+          <input type="checkbox" :disabled="areQesAnswered" :value="answer.text" v-model="selectedAnswer[i]">{{
+            answer.text }}</input>
         </div>
-        <p v-if="qes.isAnswered">Korrekte Antwort: {{ answers[index] }} </p>
+        <p v-if="areQesAnswered">Korrekte Antwort: {{ answers[index] }} </p>
       </div>
       <button @click="showResult">Check</button>
     </div>

@@ -7,6 +7,7 @@ import de.kit.recruitergame.service.RecruiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public class RecruiterController {
     }
 
     @GetMapping("/{recID}")
-    public Set<QuestionDTO> getQuestionsWithAnswers(@PathVariable int recID){
+    public LinkedHashSet<QuestionDTO> getQuestionsWithAnswers(@PathVariable int recID){
         return recruiterService.getQuestionsWithAnswers(recID);
     }
 

@@ -7,14 +7,17 @@ public class QuestionDTO {
     private Long id;
     private String text;
     private List<AnswerDTO> answers;
+    private int points;
 
     public QuestionDTO() {
     }
 
-    public QuestionDTO(Long id, String text, List<AnswerDTO> answers) {
-        this.id = id;
-        this.text = text;
-        this.answers = answers;
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     public Long getId() {

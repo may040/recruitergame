@@ -15,7 +15,7 @@ public class RecruiterAnswer {
     @ManyToOne
     private Answer answer;
 
-    private boolean recruiterAnser;
+    private boolean recruiterAnswer;
 
     public RecruiterAnswer() {
     }
@@ -28,8 +28,8 @@ public class RecruiterAnswer {
         return answer;
     }
 
-    public boolean isRecruiterAnser() {
-        return recruiterAnser;
+    public boolean isRecruiterAnwser() {
+        return recruiterAnswer;
     }
 
     public void setRecruiter(Recruiter recruiter) {
@@ -40,7 +40,7 @@ public class RecruiterAnswer {
         this.answer = answer;
     }
 
-    public void setRecruiterAnser(boolean recruiterAnser) {
-        this.recruiterAnser = recruiterAnser;
+    public void setRecruiterAnswer(boolean recruiterAnswer) {
+        this.recruiterAnswer = recruiterAnswer;
     }
 }
