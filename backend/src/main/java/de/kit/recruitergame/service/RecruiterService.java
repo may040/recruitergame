@@ -7,7 +7,6 @@ import de.kit.recruitergame.Repository.RecruiterRepository;
 import de.kit.recruitergame.dto.AnswerDTO;
 import de.kit.recruitergame.dto.QuestionDTO;
 import de.kit.recruitergame.dto.RecruiterAnswerDTO;
-import de.kit.recruitergame.model.Answer;
 import de.kit.recruitergame.model.Question;
 import de.kit.recruitergame.model.Recruiter;
 import de.kit.recruitergame.model.RecruiterAnswer;
@@ -47,11 +46,11 @@ public class RecruiterService {
     }
 
 
-    public LinkedHashSet<QuestionDTO> getQuestionsWithAnswers(int recID) {
+    public LinkedHashSet<QuestionDTO> getQuestionsWithAnswers(Long recID) {
         Recruiter rec = recruiterRepository.findById(recID).get();
         Set<Question> questions = rec.getQuestons();
 
-        return questions.stream().map(this::mapToQDTO).sorted((q1, q2) -> Long.compare(q1.getId(), q2.getId())).collect(Collectors.toCollection(LinkedHashSet::new));
+        return questions.stream().map(this::mapToQDTO).sorted(Comparator.comparingLong(QuestionDTO::getId)).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private QuestionDTO mapToQDTO(Question q) {
@@ -75,34 +74,45 @@ public class RecruiterService {
 
     public void saveRecruiterAnswers(List<RecruiterAnswerDTO> recruiterAnswersDTO) {
         List<RecruiterAnswer> recruiterAnswers = new ArrayList<>();
-        int recID = 0;
+        Long answerID = 0L;
         for (RecruiterAnswerDTO recAnswer : recruiterAnswersDTO) {
             RecruiterAnswer answer = new RecruiterAnswer();
             answer.setRecruiterAnswer(recAnswer.isSelected());
-            recID = recAnswer.getAnswer_id();
-            answer.setAnswer(answerRepository.findById(recID).get());
+            answerID = recAnswer.getAnswer_id();
+            answer.setAnswer(answerRepository.findById(answerID).get());
             answer.setRecruiter(recruiterRepository.findById(recAnswer.getRecruiter_id()).get());
             recruiterAnswers.add(answer);
         }
         recruiterAnswerRepository.saveAll(recruiterAnswers);
-
-        calculateAchievedPoints(recruiterAnswers,recID);
+        Long recID = recruiterAnswers.get(0).getRecruiter().getId();
+        int achievedPoints = calculateAchievedPoints(recruiterAnswers);
+        recruiterRepository.findById(recID).get().setAchievedPoints(achievedPoints);
 
     }
 
-    private void calculateAchievedPoints(List<RecruiterAnswer> recruiterAnswers, int recID) {
-        //TODO achievedPoints von rec berechnen speicher
-        //recruiterRepository.findById(recID).get().
-        //TODO problem answers von einer qes müssen insgeamt betrachtet werden, also drei answers gleichzeitig
-        Map<Long, Answer> groupedAnswers = recruiterAnswers.stream().collect(Collectors.toMap(ra -> ra.getAnswer().getQuestion().getId(), ra -> ra.getAnswer()));
-        groupedAnswers.entrySet().forEach(x->System.out.println(x.getKey()+x.getValue().getText()));
+    private int calculateAchievedPoints(List<RecruiterAnswer> recruiterAnswers) {
+        Map<Long, List<RecruiterAnswer>> groupedRecAnswers = recruiterAnswers.stream().collect(Collectors.groupingBy(ra -> ra.getAnswer().getQuestion().getId()));
+        int achievedPoints = 0;
+        for (Map.Entry<Long,List<RecruiterAnswer>> entry : groupedRecAnswers.entrySet()) {
+            boolean isRecAnswerCorrect = true;
 
-        /*for (RecruiterAnswer recAnswer : recruiterAnswers) {
-            recAnswer.getAnswer().getQuestion().getId();
-            if(recAnswer.isRecruiterAnwser()==recAnswer.getAnswer().isCorrect()){
+            for (RecruiterAnswer recAnswer : entry.getValue()) {
+                if (!recAnswer.isRecruiterAnwser() == recAnswer.getAnswer().isCorrect()) {
+                    isRecAnswerCorrect = false;
+                }
+
 
             }
+            if (isRecAnswerCorrect) {
+                achievedPoints += questionRepository.findById(entry.getKey()).get().getPoint();
+            }
 
-        }*/
         }
+
+        return achievedPoints;
+    }
+
+    public int getPointsOfRec(Long recID) {
+        return recruiterRepository.findById(recID).get().getAchievedPoints();
+    }
 }

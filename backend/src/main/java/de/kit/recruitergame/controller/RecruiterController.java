@@ -34,13 +34,18 @@ public class RecruiterController {
     }
 
     @GetMapping("/{recID}")
-    public LinkedHashSet<QuestionDTO> getQuestionsWithAnswers(@PathVariable int recID){
+    public LinkedHashSet<QuestionDTO> getQuestionsWithAnswers(@PathVariable Long recID){
         return recruiterService.getQuestionsWithAnswers(recID);
     }
 
     @PostMapping("/answers")
     public void  saveRecruiterAnswers(@RequestBody List<RecruiterAnswerDTO> recruiterAnswersDTO){
         recruiterService.saveRecruiterAnswers(recruiterAnswersDTO);
+    }
+    
+    @GetMapping("/points/{recID}")
+    public int getPointsOfRec(@PathVariable Long recID){
+        return recruiterService.getPointsOfRec(recID);
     }
 
     //TODO für jede qes rückmeldung ob richtig oder falsch
