@@ -1,8 +1,10 @@
 package de.kit.recruitergame.controller;
 
 import de.kit.recruitergame.dto.QuestionDTO;
+import de.kit.recruitergame.dto.RecruiterAnswerDTO;
 import de.kit.recruitergame.model.Question;
 import de.kit.recruitergame.model.Recruiter;
+import de.kit.recruitergame.model.RecruiterAnswer;
 import de.kit.recruitergame.service.RecruiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +38,10 @@ public class RecruiterController {
         return recruiterService.getQuestionsWithAnswers(recID);
     }
 
+    @PostMapping("/answers")
+    public void  saveRecruiterAnswers(@RequestBody List<RecruiterAnswerDTO> recruiterAnswersDTO){
+        recruiterService.saveRecruiterAnswers(recruiterAnswersDTO);
+    }
 
+    //TODO für jede qes rückmeldung ob richtig oder falsch
 }
