@@ -19,6 +19,8 @@ const areQesAnswered = ref(false)
 const selectedAnswers = reactive([[], [], [], [], []])
 let questions = ref([])
 let recruiterAnswers = []
+let evaRecAnswers = ref([])
+let areResultsLoaded = ref(false)
 
 async function saveRecruiterData() {
   isrecruiterDataSaved.value = !isrecruiterDataSaved.value
@@ -29,7 +31,6 @@ async function saveRecruiterData() {
     })
     recruiter.id = res.data
     questions.value = await getQuestions()
-    console.log(questions.value)
 
   } catch (error) {
     console.log(error)
@@ -57,25 +58,35 @@ function createRecruiterAnswer() {
       }
     }
   }
-  console.log(recruiterAnswers)
 }
 
 async function saveRecruiterAnswers() {
   try {
     const res = await axios.post(`http://localhost:8080/r/answers`, recruiterAnswers)
-
+    getQuesResults()
   } catch (error) {
     console.log(error)
   }
 
 }
 
+async function getQuesResults() {
+  const res = await axios.get(`http://localhost:8080/r/results/${recruiter.id}`)
+  evaRecAnswers = res.data
+  areResultsLoaded.value = true
+  console.log(evaRecAnswers)
+  for (let index = 0; index < color.length; index++) {
+    color[index] = evaRecAnswers[index].answeredCorrect ? 'green' : 'red'
+  }
+}
+
 
 function showResult() {
   areQesAnswered.value = true
-  //evaCheckedAnswers()
   createRecruiterAnswer()
   saveRecruiterAnswers()
+
+
 }
 
 // function evaCheckedAnswers() {
@@ -117,11 +128,11 @@ function showResult() {
         <p>{{ qes.text }}</p>
         <p>{{ qes.points }}</p>
         <div class="answers" v-for="(answer, i) in qes.answers" :key="i">
-          <input type="checkbox" :disabled="areQesAnswered" :value="answer.text" v-model="selectedAnswers[index]">{{
+          <input type="radio" :disabled="areQesAnswered" :value="answer.text" v-model="selectedAnswers[index]">{{
             answer.text }}</input>
         </div>
-        <p v-if="areQesAnswered">Korrekte Antwort: {{ answers[index] }} </p>
-        <!-- <p v-if="areQesAnswered">Korrekte Antwort: {{ selectedAnswer }} </p> -->
+        <p v-if="areQesAnswered && areResultsLoaded.valueOf">Korrekte Antwort: {{ evaRecAnswers[index].correctAnswer }}
+        </p>
       </div>
       <button @click="showResult">Check</button>
     </div>

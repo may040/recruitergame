@@ -1,17 +1,15 @@
 package de.kit.recruitergame.controller;
 
+import de.kit.recruitergame.dto.QuesResultDTO;
 import de.kit.recruitergame.dto.QuestionDTO;
 import de.kit.recruitergame.dto.RecruiterAnswerDTO;
-import de.kit.recruitergame.model.Question;
 import de.kit.recruitergame.model.Recruiter;
-import de.kit.recruitergame.model.RecruiterAnswer;
 import de.kit.recruitergame.service.RecruiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/r")
@@ -42,11 +40,15 @@ public class RecruiterController {
     public void  saveRecruiterAnswers(@RequestBody List<RecruiterAnswerDTO> recruiterAnswersDTO){
         recruiterService.saveRecruiterAnswers(recruiterAnswersDTO);
     }
-    
+
     @GetMapping("/points/{recID}")
     public int getPointsOfRec(@PathVariable Long recID){
         return recruiterService.getPointsOfRec(recID);
     }
 
-    //TODO für jede qes rückmeldung ob richtig oder falsch
+    @GetMapping("/results/{recID}")
+    public List<QuesResultDTO> getResultsOfRec(@PathVariable Long recID){
+         return recruiterService.getResultsOfRec(recID);
+    }
+
 }

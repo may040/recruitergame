@@ -5,8 +5,10 @@ import de.kit.recruitergame.Repository.QuestionRepository;
 import de.kit.recruitergame.Repository.RecruiterAnswerRepository;
 import de.kit.recruitergame.Repository.RecruiterRepository;
 import de.kit.recruitergame.dto.AnswerDTO;
+import de.kit.recruitergame.dto.QuesResultDTO;
 import de.kit.recruitergame.dto.QuestionDTO;
 import de.kit.recruitergame.dto.RecruiterAnswerDTO;
+import de.kit.recruitergame.model.Answer;
 import de.kit.recruitergame.model.Question;
 import de.kit.recruitergame.model.Recruiter;
 import de.kit.recruitergame.model.RecruiterAnswer;
@@ -93,26 +95,49 @@ public class RecruiterService {
     private int calculateAchievedPoints(List<RecruiterAnswer> recruiterAnswers) {
         Map<Long, List<RecruiterAnswer>> groupedRecAnswers = recruiterAnswers.stream().collect(Collectors.groupingBy(ra -> ra.getAnswer().getQuestion().getId()));
         int achievedPoints = 0;
-        for (Map.Entry<Long,List<RecruiterAnswer>> entry : groupedRecAnswers.entrySet()) {
+        for (Map.Entry<Long, List<RecruiterAnswer>> entry : groupedRecAnswers.entrySet()) {
             boolean isRecAnswerCorrect = true;
 
             for (RecruiterAnswer recAnswer : entry.getValue()) {
                 if (!recAnswer.isRecruiterAnwser() == recAnswer.getAnswer().isCorrect()) {
                     isRecAnswerCorrect = false;
                 }
-
-
             }
             if (isRecAnswerCorrect) {
                 achievedPoints += questionRepository.findById(entry.getKey()).get().getPoint();
             }
-
         }
-
         return achievedPoints;
     }
 
     public int getPointsOfRec(Long recID) {
         return recruiterRepository.findById(recID).get().getAchievedPoints();
+    }
+
+    public List<QuesResultDTO> getResultsOfRec(Long recID) {
+        Recruiter rec = recruiterRepository.findById(recID).get();
+        List<RecruiterAnswer> recAnswers = recruiterAnswerRepository.findByRecID(recID);
+        boolean isRecAnswerCorrect = true;
+        TreeMap<Long,Boolean> quesResults = new TreeMap<Long, Boolean>();
+
+        for (Question ques : rec.getQuestons()) {
+            for (Answer answer : ques.getAnswers()) {
+                RecruiterAnswer sameAnswerOfRec = recAnswers.stream().filter(recAns -> recAns.getAnswer().getId() == answer.getId()).findFirst().orElse(null);
+                if(answer.isCorrect()!=sameAnswerOfRec.isRecruiterAnwser()){
+                    isRecAnswerCorrect = false;
+                }
+            }
+            quesResults.put(ques.getId(),isRecAnswerCorrect);
+        }
+
+        List<QuesResultDTO> results = new ArrayList<>();
+        for(Map.Entry<Long,Boolean> entry : quesResults.entrySet()){
+            QuesResultDTO resultDTO = new QuesResultDTO();
+            resultDTO.setCorrectAnswer(questionRepository.findById(entry.getKey()).get().getAnswers().stream().filter(a->a.isCorrect()==true).findFirst().get().getText());
+            resultDTO.setAnsweredCorrect(entry.getValue());
+            results.add(resultDTO);
+        }
+        results.forEach(x->System.out.println(x.getCorrectAnswer()));
+        return results;
     }
 }
