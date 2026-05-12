@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const recruiter = reactive({ name: "", company: "", id: null })
 const isrecruiterDataSaved = ref(false)
-const color = reactive(["gray", "gray", "gray", "gray", "gray"])
+const color = reactive(["white", "white", "white", "white", "white"])
 const areQesAnswered = ref(false)
 //Parallel structure
 const selectedAnswers = reactive([[], [], [], [], []])
@@ -88,24 +88,31 @@ function showResult() {
 <template>
   <div class="game">
     <form class="recruiter_data" @submit.prevent="saveRecruiterData" v-show="!isrecruiterDataSaved">
-      <p id="title">ENTER YOUR RECRUITER DETAILS</p>
+      <p id="title">PROVIDE YOUR RECRUITER DETAILS</p>
       <input id="ip_name" v-model="recruiter.name" placeholder="Your Name"></input>
       <input id="ip_company" v-model="recruiter.company" placeholder="Your Company"></input>
       <button id="btn_submit" type="submit">Start Game</button>
     </form>
     <h1 v-show="isrecruiterDataSaved">Hello {{ recruiter.name }} from {{ recruiter.company }}, start your game</h1>
-    <div class="questions" v-show="isrecruiterDataSaved">
-      <div class="question" v-for="(qes, index) in questions" :style="{ backgroundColor: color[index] }" :key="index">
-        <p>{{ qes.text }}</p>
-        <p>{{ qes.points }}</p>
-        <div class="answers" v-for="(answer, i) in qes.answers" :key="i">
-          <input type="radio" :disabled="areQesAnswered" :value="answer.text" v-model="selectedAnswers[index]">{{
-            answer.text }}</input>
+
+    <div class="tasks" v-show="isrecruiterDataSaved">
+      <div class="task" v-for="(qes, index) in questions" :style="{ backgroundColor: color[index] }" :key="index">
+        <div class="header">
+          <p class="text">{{ qes.text }}</p>
+          <p class="points">Points: {{ qes.points }}</p>
         </div>
-        <p v-if="areQesAnswered && areResultsLoaded.valueOf">Korrekte Antwort: {{ evaRecAnswers[index].correctAnswer }}
-        </p>
+
+        <div class="answers">
+          <div class="answer" v-for="(answer, i) in qes.answers" :key="i">
+            <input type="radio" :disabled="areQesAnswered" :value="answer.text" v-model="selectedAnswers[index]">{{
+              answer.text }}</input>
+          </div>
+          <p v-if="areQesAnswered && areResultsLoaded.valueOf">Korrekte Antwort: {{ evaRecAnswers[index].correctAnswer
+          }}
+          </p>
+        </div>
       </div>
-      <button @click="showResult">Check</button>
+      <button id="btn_result" @click="showResult">Check</button>
     </div>
   </div>
 </template>
@@ -120,6 +127,68 @@ function showResult() {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 10px;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.points {
+  text-align: right;
+  margin: 0px;
+
+}
+
+.text {
+  margin: 0px;
+
+}
+
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: flex-start;
+
+}
+
+.task {
+  margin: 12px auto;
+  width: 400px;
+  padding: 16px;
+
+  border-radius: 10px;
+
+  color: black;
+
+  background: rgba(255, 255, 255, 0.14);
+
+  border: 5px solid;
+  border-image: linear-gradient(135deg,
+      rgb(28, 28, 224),
+      rgb(26, 198, 158)) 1;
+
+  box-shadow:
+    0 6px 10px rgba(0, 0, 0, 0.25),
+    0 18px 40px rgba(0, 0, 0, 0.35);
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task:hover {
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 10px 18px rgba(0, 0, 0, 0.3),
+    0 25px 60px rgba(0, 0, 0, 0.45);
 }
 
 .game {
@@ -129,12 +198,14 @@ function showResult() {
   align-items: center;
   width: fit-content;
   margin: 0 auto;
-  padding: 20px;
   font-size: 20px;
   font-family: 'Times New Roman', Times, serif;
   margin: 0 auto;
-  background-color: white;
-
+  background: white;
+  padding: 20px 20px;
+  border-radius: 10px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.15);
 
 }
 
@@ -143,13 +214,16 @@ function showResult() {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+
 }
+
 
 #title {
   margin-top: 10px;
   margin-bottom: 15px;
 
-  color: rgb(108, 103, 103);
+  color: rgb(92, 90, 90);
 
   font-size: 20px;
   font-weight: 700;
@@ -158,9 +232,7 @@ function showResult() {
 
   text-align: center;
 
-  text-shadow:
-    0 0 12px rgba(28, 28, 224, 0.6),
-    0 0 24px rgba(26, 198, 158, 0.4);
+
 }
 
 #ip_name {
@@ -275,6 +347,45 @@ function showResult() {
 }
 
 #btn_submit:active {
+  transform: translateY(1px);
+}
+
+#btn_result {
+  margin-top: 15px;
+  padding: 9px 32px;
+
+  border: none;
+  border-radius: 6px;
+
+  background: linear-gradient(135deg,
+      rgb(28, 28, 224),
+      rgb(26, 198, 158));
+
+  color: white;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  box-shadow:
+    0 6px 18px rgba(28, 28, 224, 0.35),
+    0 3px 8px rgba(26, 198, 158, 0.25);
+}
+
+#btn_result:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 10px 24px rgba(28, 28, 224, 0.45),
+    0 6px 12px rgba(26, 198, 158, 0.35);
+}
+
+#btn_result:active {
   transform: translateY(1px);
 }
 </style>
