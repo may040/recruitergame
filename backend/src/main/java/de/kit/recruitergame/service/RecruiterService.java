@@ -137,7 +137,7 @@ public class RecruiterService {
             resultDTO.setAnsweredCorrect(entry.getValue());
             results.add(resultDTO);
         }
-        results.forEach(x->System.out.println(x.getCorrectAnswer()));
+        results.forEach(x->System.out.println(x.isAnsweredCorrect()));
         return results;
     }
 }

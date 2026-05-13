@@ -57,6 +57,7 @@ function createRecruiterAnswer() {
 async function saveRecruiterAnswers() {
   try {
     const res = await axios.post(`http://localhost:8080/r/answers`, recruiterAnswers)
+    //Fix bug async reading and writing
     getQuesResults()
   } catch (error) {
     console.log(error)
@@ -70,9 +71,12 @@ async function getQuesResults() {
   areResultsLoaded.value = true
   console.log(evaRecAnswers)
   for (let index = 0; index < color.length; index++) {
-    color[index] = evaRecAnswers[index].answeredCorrect ? 'green' : 'red'
+    color[index] = evaRecAnswers[index].answeredCorrect ? 'linear-gradient(135deg,  rgb(34, 197, 94),  rgb(16, 185, 129),  rgb(74, 222, 128)) 1' : 'linear-gradient(135deg,    rgb(239, 68, 68),  rgb(220, 38, 38),  rgb(248, 113, 113)) 1'
   }
+  console.log(evaRecAnswers)
 }
+
+
 
 
 function showResult() {
@@ -93,10 +97,11 @@ function showResult() {
       <input id="ip_company" v-model="recruiter.company" placeholder="Your Company"></input>
       <button id="btn_submit" type="submit">Start Game</button>
     </form>
-    <h1 v-show="isrecruiterDataSaved">Hello {{ recruiter.name }} from {{ recruiter.company }}, start your game</h1>
+    <p id="title" v-show="isrecruiterDataSaved">Hello {{ recruiter.name }} from {{ recruiter.company }},<br> start your
+      questionnaire</p>
 
     <div class="tasks" v-show="isrecruiterDataSaved">
-      <div class="task" v-for="(qes, index) in questions" :style="{ backgroundColor: color[index] }" :key="index">
+      <div class="task" v-for="(qes, index) in questions" :style="{ borderImage: color[index] }" :key="index">
         <div class="header">
           <p class="text">{{ qes.text }}</p>
           <p class="points">Points: {{ qes.points }}</p>
@@ -104,8 +109,12 @@ function showResult() {
 
         <div class="answers">
           <div class="answer" v-for="(answer, i) in qes.answers" :key="i">
-            <input type="radio" :disabled="areQesAnswered" :value="answer.text" v-model="selectedAnswers[index]">{{
-              answer.text }}</input>
+            <label>
+              <input class="r_answer" type="radio" :disabled="areQesAnswered" :value="answer.text"
+                v-model="selectedAnswers[index]">{{
+                  answer.text }}</input>
+            </label>
+
           </div>
           <p v-if="areQesAnswered && areResultsLoaded.valueOf">Korrekte Antwort: {{ evaRecAnswers[index].correctAnswer
           }}
@@ -128,7 +137,9 @@ function showResult() {
   justify-content: center;
   align-items: center;
   padding: 10px;
+
 }
+
 
 .header {
   display: flex;
@@ -150,6 +161,60 @@ function showResult() {
 
 }
 
+.r_answer {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 18px;
+  height: 18px;
+
+  border-radius: 50%;
+
+  border: 3px solid transparent;
+
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(135deg,
+      rgb(28, 28, 224),
+      rgb(26, 198, 158)) border-box;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  position: relative;
+
+  margin-right: 10px;
+}
+
+.r_answer:checked::before {
+  content: "";
+
+  position: absolute;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(135deg,
+      rgb(28, 28, 224),
+      rgb(26, 198, 158));
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+.r_answer:hover {
+  transform: scale(1.08);
+
+  box-shadow:
+    0 0 10px rgba(28, 28, 224, 0.35),
+    0 0 14px rgba(26, 198, 158, 0.25);
+}
+
 
 .answers {
   display: flex;
@@ -159,6 +224,16 @@ function showResult() {
   align-items: flex-start;
 
 }
+
+.tasks {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+
 
 .task {
   margin: 12px auto;
@@ -172,6 +247,8 @@ function showResult() {
   background: rgba(255, 255, 255, 0.14);
 
   border: 5px solid;
+
+
   border-image: linear-gradient(135deg,
       rgb(28, 28, 224),
       rgb(26, 198, 158)) 1;
@@ -228,7 +305,6 @@ function showResult() {
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 2px;
-  text-transform: uppercase;
 
   text-align: center;
 
