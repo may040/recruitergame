@@ -57,12 +57,12 @@ function createRecruiterAnswer() {
 async function saveRecruiterAnswers() {
   try {
     const res = await axios.post(`http://localhost:8080/r/answers`, recruiterAnswers)
-    //Fix bug async reading and writing
-    getQuesResults()
+    if (res.status == 200) {
+      const resRes = await getQuesResults()
+    }
   } catch (error) {
     console.log(error)
   }
-
 }
 
 async function getQuesResults() {
@@ -116,8 +116,9 @@ function showResult() {
             </label>
 
           </div>
-          <p v-if="areQesAnswered && areResultsLoaded.valueOf">Korrekte Antwort: {{ evaRecAnswers[index].correctAnswer
-          }}
+          <p id="correctAnswer" v-if="areQesAnswered && areResultsLoaded.valueOf">Korrekte Antwort: {{
+            evaRecAnswers[index].correctAnswer
+            }}
           </p>
         </div>
       </div>
@@ -140,6 +141,11 @@ function showResult() {
 
 }
 
+#correctAnswer {
+  margin-top: 10px;
+  margin-bottom: 0px;
+
+}
 
 .header {
   display: flex;

@@ -117,12 +117,16 @@ public class RecruiterService {
     public List<QuesResultDTO> getResultsOfRec(Long recID) {
         Recruiter rec = recruiterRepository.findById(recID).get();
         List<RecruiterAnswer> recAnswers = recruiterAnswerRepository.findByRecID(recID);
-        boolean isRecAnswerCorrect = true;
+        recAnswers.forEach(x->System.out.println(x.isRecruiterAnwser()));
+
         TreeMap<Long,Boolean> quesResults = new TreeMap<Long, Boolean>();
 
         for (Question ques : rec.getQuestons()) {
+            boolean isRecAnswerCorrect = true;
+
             for (Answer answer : ques.getAnswers()) {
                 RecruiterAnswer sameAnswerOfRec = recAnswers.stream().filter(recAns -> recAns.getAnswer().getId() == answer.getId()).findFirst().orElse(null);
+
                 if(answer.isCorrect()!=sameAnswerOfRec.isRecruiterAnwser()){
                     isRecAnswerCorrect = false;
                 }
