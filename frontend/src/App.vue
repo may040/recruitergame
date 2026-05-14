@@ -15,6 +15,7 @@ let questions = ref([])
 let recruiterAnswers = []
 let evaRecAnswers = ref([])
 let areResultsLoaded = ref(false)
+let achievedPoints = ref(0)
 
 async function saveRecruiterData() {
   isrecruiterDataSaved.value = !isrecruiterDataSaved.value
@@ -41,6 +42,17 @@ async function getQuestions() {
   }
 }
 
+async function getPoints() {
+  try {
+    let res = await axios.get(`http://localhost:8080/r/points/${recruiter.id}`)
+    console.log(res.data)
+    achievedPoints.value = res.data
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
+
 function createRecruiterAnswer() {
 
   for (const [index, qes] of questions.value.entries()) {
@@ -59,6 +71,8 @@ async function saveRecruiterAnswers() {
     const res = await axios.post(`http://localhost:8080/r/answers`, recruiterAnswers)
     if (res.status == 200) {
       const resRes = await getQuesResults()
+      const resPoin = await getPoints()
+
     }
   } catch (error) {
     console.log(error)
@@ -83,7 +97,6 @@ function showResult() {
   areQesAnswered.value = true
   createRecruiterAnswer()
   saveRecruiterAnswers()
-
 
 }
 
@@ -122,7 +135,8 @@ function showResult() {
           </p>
         </div>
       </div>
-      <button id="btn_result" @click="showResult">Check</button>
+      <p v-if="areQesAnswered">{{ achievedPoints }} of 5 points</p>
+      <button id="btn_result" :disabled="areQesAnswered" @click="showResult">Check</button>
     </div>
   </div>
 </template>
