@@ -1,13 +1,14 @@
 <script setup>
+import { ref, reactive, onMounted, watch, watchEffect } from 'vue'
 
 import { saveRecruiterData } from '@/services/recruiterService'
 
-const recruiter = defineModel('recruiter')
-const isrecruiterDataSaved = defineModel(['isrecruiterDataSaved'])
+const props = defineProps(['recruiter'])
+const isrecruiterDataSaved = defineModel('isrecruiterDataSaved')
 
 async function saveInput() {
-    const recruiterID = await saveRecruiterData(recruiter)
-    recruiter.id = recruiterID
+    const recruiterID = await saveRecruiterData(props.recruiter)
+    props.recruiter.id = recruiterID
     isrecruiterDataSaved.value = !isrecruiterDataSaved.value
 }
 
@@ -16,8 +17,8 @@ async function saveInput() {
 <template>
     <form class="recruiter_data" @submit.prevent="saveInput" v-show="!isrecruiterDataSaved">
         <p id="title">PROVIDE YOUR RECRUITER DETAILS</p>
-        <input id="ip_name" v-model="recruiter.name" placeholder="Your Name"></input>
-        <input id="ip_company" v-model="recruiter.company" placeholder="Your Company"></input>
+        <input id="ip_name" v-model="props.recruiter.name" placeholder="Your Name"></input>
+        <input id="ip_company" v-model="props.recruiter.company" placeholder="Your Company"></input>
         <button id="btn_submit" type="submit">Start Game</button>
     </form>
 </template>

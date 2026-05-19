@@ -1,7 +1,10 @@
 <script setup>
-import { ref, reactive, onMounted, watch, watchEffect } from 'vue'
+import { ref, reactive, onMounted, watch, watchEffect, provide } from 'vue'
 import axios from 'axios';
 import RecruiterForm from './components/RecruiterForm.vue';
+import QuestionList from './components/ContentList.vue';
+import { getQuestions } from '@/services/recruiterService'
+import ContentList from './components/ContentList.vue';
 
 const recruiter = reactive({ name: "", company: "", id: null })
 const isrecruiterDataSaved = ref(false)
@@ -14,30 +17,30 @@ let evaRecAnswers = ref([])
 let areResultsLoaded = ref(false)
 let achievedPoints = ref(0)
 
-async function saveRecruiterData() {
-  isrecruiterDataSaved.value = !isrecruiterDataSaved.value
-  try {
-    const res = await axios.post("http://localhost:8080/r/add", {
-      name: recruiter.name,
-      company: recruiter.company
-    })
-    recruiter.id = res.data
-    questions.value = await getQuestions()
+// async function saveRecruiterData() {
+//   isrecruiterDataSaved.value = !isrecruiterDataSaved.value
+//   try {
+//     const res = await axios.post("http://localhost:8080/r/add", {
+//       name: recruiter.name,
+//       company: recruiter.company
+//     })
+//     recruiter.id = res.data
+//     questions.value = await getQuestions()
 
-  } catch (error) {
-    console.log(error)
-  }
-}
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
 
-async function getQuestions() {
-  try {
-    let res = await axios.get(`http://localhost:8080/r/${recruiter.id}`)
-    return res.data
-  } catch (error) {
-    console.log(error)
-    return null
-  }
-}
+// async function getQuestions() {
+//   try {
+//     let res = await axios.get(`http://localhost:8080/r/${recruiter.id}`)
+//     return res.data
+//   } catch (error) {
+//     console.log(error)
+//     return null
+//   }
+// }
 
 async function getPoints() {
   try {
@@ -96,21 +99,36 @@ function showResult() {
 
 }
 
+watch(isrecruiterDataSaved, async (n, o) => {
+  questions.value = await getQuestions(recruiter.id)
+})
+
+provide('areQesAnswered', areQesAnswered)
+provide('selectedAnswers', selectedAnswers)
+
 </script>
 
 <template>
   <div class="game">
-    <RecruiterForm v-model:recruiter="recruiter" v-model:isrecruiterDataSaved="isrecruiterDataSaved"></RecruiterForm>
+    <RecruiterForm :recruiter="recruiter" v-model:isrecruiterDataSaved="isrecruiterDataSaved"></RecruiterForm>
+
     <p id="title" v-show="isrecruiterDataSaved">Welcome {{ recruiter.name }} from {{ recruiter.company }},<br> start
       your
       questionnaire</p>
-    <div class="tasks" v-show="isrecruiterDataSaved">
-      <div class="task" v-for="(qes, index) in questions" :style="{ borderImage: color[index] }" :key="index">
+
+    <ContentList :isrecruiterDataSaved="isrecruiterDataSaved" :questions="questions" :color="color"></ContentList>
+
+    <div class="question_list" v-show="isrecruiterDataSaved">
+
+      <div class="question" v-for="(qes, index) in questions" :style="{ borderImage: color[index] }" :key="index">
+
         <div class="header">
           <p class="text">{{ qes.text }}</p>
           <p class="points">Points: {{ qes.points }}</p>
         </div>
+
         <div class="answers">
+
           <div class="answer" v-for="(answer, i) in qes.answers" :key="i">
             <label>
               <input class="r_answer" type="radio" :disabled="areQesAnswered" :value="answer.text"
@@ -118,14 +136,18 @@ function showResult() {
                   answer.text }}</input>
             </label>
           </div>
+
           <p id="correctAnswer" v-if="areQesAnswered && areResultsLoaded.valueOf">Korrekte Antwort: {{
             evaRecAnswers[index].correctAnswer
-            }}
+          }}
           </p>
+
         </div>
       </div>
+
       <p v-if="areQesAnswered">{{ achievedPoints }} of 5 points</p>
       <button id="btn_result" :disabled="areQesAnswered" @click="showResult">Check</button>
+
     </div>
   </div>
 </template>
@@ -234,7 +256,7 @@ function showResult() {
 
 }
 
-.tasks {
+.question_list {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -244,7 +266,7 @@ function showResult() {
 
 
 
-.task {
+.question {
   margin: 12px auto;
   width: 400px;
   padding: 16px;
@@ -269,7 +291,7 @@ function showResult() {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.task:hover {
+.question:hover {
   transform: translateY(-6px);
 
   box-shadow:

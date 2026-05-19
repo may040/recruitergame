@@ -46,9 +46,9 @@ public class GameApplication {
         );
 
         List<Answer> bornAnswers = List.of(
-                new Answer("Nah an Heidelberg", standardQuestions.get(3), false),
-                new Answer("Nah an Heilbronn", standardQuestions.get(3), true),
-                new Answer("Nah an Stuttgart", standardQuestions.get(3), false)
+                new Answer("Nähe Heidelberg", standardQuestions.get(3), false),
+                new Answer("Nähe Heilbronn", standardQuestions.get(3), true),
+                new Answer("Nähe Stuttgart", standardQuestions.get(3), false)
         );
 
         List<Answer> likeAnswers = List.of(
