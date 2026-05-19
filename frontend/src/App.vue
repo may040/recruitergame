@@ -1,15 +1,12 @@
 <script setup>
 import { ref, reactive, onMounted, watch, watchEffect } from 'vue'
 import axios from 'axios';
-
-
-
+import RecruiterForm from './components/RecruiterForm.vue';
 
 const recruiter = reactive({ name: "", company: "", id: null })
 const isrecruiterDataSaved = ref(false)
 const color = reactive(["white", "white", "white", "white", "white"])
 const areQesAnswered = ref(false)
-//Parallel structure
 const selectedAnswers = reactive([[], [], [], [], []])
 let questions = ref([])
 let recruiterAnswers = []
@@ -45,7 +42,6 @@ async function getQuestions() {
 async function getPoints() {
   try {
     let res = await axios.get(`http://localhost:8080/r/points/${recruiter.id}`)
-    console.log(res.data)
     achievedPoints.value = res.data
   } catch (error) {
     console.log(error)
@@ -104,22 +100,16 @@ function showResult() {
 
 <template>
   <div class="game">
-    <form class="recruiter_data" @submit.prevent="saveRecruiterData" v-show="!isrecruiterDataSaved">
-      <p id="title">PROVIDE YOUR RECRUITER DETAILS</p>
-      <input id="ip_name" v-model="recruiter.name" placeholder="Your Name"></input>
-      <input id="ip_company" v-model="recruiter.company" placeholder="Your Company"></input>
-      <button id="btn_submit" type="submit">Start Game</button>
-    </form>
-    <p id="title" v-show="isrecruiterDataSaved">Hello {{ recruiter.name }} from {{ recruiter.company }},<br> start your
+    <RecruiterForm v-model:recruiter="recruiter" v-model:isrecruiterDataSaved="isrecruiterDataSaved"></RecruiterForm>
+    <p id="title" v-show="isrecruiterDataSaved">Welcome {{ recruiter.name }} from {{ recruiter.company }},<br> start
+      your
       questionnaire</p>
-
     <div class="tasks" v-show="isrecruiterDataSaved">
       <div class="task" v-for="(qes, index) in questions" :style="{ borderImage: color[index] }" :key="index">
         <div class="header">
           <p class="text">{{ qes.text }}</p>
           <p class="points">Points: {{ qes.points }}</p>
         </div>
-
         <div class="answers">
           <div class="answer" v-for="(answer, i) in qes.answers" :key="i">
             <label>
@@ -127,7 +117,6 @@ function showResult() {
                 v-model="selectedAnswers[index]">{{
                   answer.text }}</input>
             </label>
-
           </div>
           <p id="correctAnswer" v-if="areQesAnswered && areResultsLoaded.valueOf">Korrekte Antwort: {{
             evaRecAnswers[index].correctAnswer
