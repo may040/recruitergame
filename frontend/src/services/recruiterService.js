@@ -37,3 +37,23 @@ export async function getPoints(id) {
     return null
   }
 }
+
+export async function getQuesResults(id) {
+  try {
+    const res = await apiClient.get(`/results/${id}`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
+
+export async function saveRecruiterAnswers(recruiterAnswers) {
+  try {
+    const res = await apiClient.post(`/answers`, recruiterAnswers)
+    return res.status
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}

@@ -1,14 +1,12 @@
 <script setup>
-import { ref, reactive, onMounted, watch, watchEffect, provide } from 'vue'
-import axios from 'axios';
+import { ref, reactive, watch, provide } from 'vue'
 import RecruiterForm from './components/RecruiterForm.vue';
-import QuestionList from './components/ContentList.vue';
-import { getQuestions } from '@/services/recruiterService'
+import { getQuestions, getQuesResults, saveRecruiterAnswers } from '@/services/recruiterService'
 import ContentList from './components/ContentList.vue';
 
 const recruiter = reactive({ name: "", company: "", id: null })
 const isrecruiterDataSaved = ref(false)
-const color = reactive(["white", "white", "white", "white", "white"])
+let color = reactive(["white", "white", "white", "white", "white"])
 let areQesAnswered = ref(false)
 const selectedAnswers = reactive([[], [], [], [], []])
 let questions = ref([])
@@ -16,10 +14,7 @@ let recruiterAnswers = []
 let evaRecAnswers = ref([])
 let areResultsLoaded = ref(false)
 
-
-
 function createRecruiterAnswer() {
-
   for (const [index, qes] of questions.value.entries()) {
     for (const answer of qes.answers) {
       if (selectedAnswers[index].includes(answer.text)) {
@@ -31,42 +26,20 @@ function createRecruiterAnswer() {
   }
 }
 
-async function saveRecruiterAnswers() {
-  try {
-    const res = await axios.post(`http://localhost:8080/r/answers`, recruiterAnswers)
-    if (res.status == 200) {
-      const resRes = await getQuesResults()
-
-      areQesAnswered.value = true
-      areResultsLoaded.value = true
-
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-async function getQuesResults() {
-  try {
-    const res = await axios.get(`http://localhost:8080/r/results/${recruiter.id}`)
-    evaRecAnswers.value = res.data
-
-    for (let index = 0; index < color.length; index++) {
-      color[index] = evaRecAnswers.value[index].answeredCorrect ? 'linear-gradient(135deg,  rgb(34, 197, 94),  rgb(16, 185, 129),  rgb(74, 222, 128)) 1' : 'linear-gradient(135deg,    rgb(239, 68, 68),  rgb(220, 38, 38),  rgb(248, 113, 113)) 1'
-    }
-  } catch (error) {
-    console.log(error)
+async function determineBorderColor() {
+  evaRecAnswers.value = await getQuesResults(recruiter.id)
+  for (let index = 0; index < color.length; index++) {
+    color[index] = evaRecAnswers.value[index].answeredCorrect ? 'linear-gradient(135deg,  rgb(34, 197, 94),  rgb(16, 185, 129),  rgb(74, 222, 128)) 1' : 'linear-gradient(135deg,    rgb(239, 68, 68),  rgb(220, 38, 38),  rgb(248, 113, 113)) 1'
   }
 }
 
 
-
-
-function showResult() {
+async function showResult() {
   createRecruiterAnswer()
-  saveRecruiterAnswers()
-
-
+  await saveRecruiterAnswers(recruiterAnswers)
+  await determineBorderColor()
+  areQesAnswered.value = true
+  areResultsLoaded.value = true
 }
 
 watch(isrecruiterDataSaved, async (n, o) => {
@@ -80,9 +53,6 @@ provide('evaRecAnswers', evaRecAnswers)
 
 </script>
 
-
-
-
 <template>
   <div class="game">
     <RecruiterForm :recruiter="recruiter" v-model:isrecruiterDataSaved="isrecruiterDataSaved"></RecruiterForm>
@@ -93,11 +63,6 @@ provide('evaRecAnswers', evaRecAnswers)
       :recruiterID="recruiter.id" @eva-rec-input="showResult"></ContentList>
   </div>
 </template>
-
-
-
-
-
 
 
 <style>
