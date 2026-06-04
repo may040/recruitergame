@@ -15,19 +15,8 @@ let questions = ref([])
 let recruiterAnswers = []
 let evaRecAnswers = ref([])
 let areResultsLoaded = ref(false)
-let achievedPoints = ref(0)
 
 
-
-async function getPoints() {
-  try {
-    let res = await axios.get(`http://localhost:8080/r/points/${recruiter.id}`)
-    achievedPoints.value = res.data
-  } catch (error) {
-    console.log(error)
-    return null
-  }
-}
 
 function createRecruiterAnswer() {
 
@@ -47,7 +36,6 @@ async function saveRecruiterAnswers() {
     const res = await axios.post(`http://localhost:8080/r/answers`, recruiterAnswers)
     if (res.status == 200) {
       const resRes = await getQuesResults()
-      const resPoin = await getPoints()
 
       areQesAnswered.value = true
       areResultsLoaded.value = true
@@ -61,15 +49,11 @@ async function saveRecruiterAnswers() {
 async function getQuesResults() {
   try {
     const res = await axios.get(`http://localhost:8080/r/results/${recruiter.id}`)
-
-
     evaRecAnswers.value = res.data
 
     for (let index = 0; index < color.length; index++) {
       color[index] = evaRecAnswers.value[index].answeredCorrect ? 'linear-gradient(135deg,  rgb(34, 197, 94),  rgb(16, 185, 129),  rgb(74, 222, 128)) 1' : 'linear-gradient(135deg,    rgb(239, 68, 68),  rgb(220, 38, 38),  rgb(248, 113, 113)) 1'
     }
-
-
   } catch (error) {
     console.log(error)
   }
@@ -106,7 +90,7 @@ provide('evaRecAnswers', evaRecAnswers)
       your
       questionnaire</p>
     <ContentList :isrecruiterDataSaved="isrecruiterDataSaved" :questions="questions" :color="color"
-      :achievedPoints="achievedPoints" @eva-rec-input="showResult"></ContentList>
+      :recruiterID="recruiter.id" @eva-rec-input="showResult"></ContentList>
   </div>
 </template>
 

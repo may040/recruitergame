@@ -1,8 +1,9 @@
 <script setup>
 import Question from './Question.vue';
-import { inject } from 'vue';
+import { inject, watch, ref } from 'vue';
+import { getPoints } from '@/services/recruiterService'
 
-const props = defineProps(['isrecruiterDataSaved', 'questions', 'color', 'achievedPoints'])
+const props = defineProps(['isrecruiterDataSaved', 'questions', 'color', 'recruiterID'])
 
 const areQesAnswered = inject('areQesAnswered')
 
@@ -11,6 +12,13 @@ const emit = defineEmits(['eva-rec-input'])
 function showResult() {
     emit('eva-rec-input')
 }
+const achievedPoints = ref(0)
+
+watch(areQesAnswered, async (n, o) => {
+    achievedPoints.value = await getPoints(props.recruiterID)
+})
+
+
 </script>
 
 <template>
@@ -19,7 +27,7 @@ function showResult() {
             :style="{ borderImage: props.color[index] }" :index="index">
         </Question>
 
-        <p v-if="areQesAnswered">{{ props.achievedPoints }} of 5 points</p>
+        <p v-if="areQesAnswered">{{ achievedPoints }} of 5 points</p>
         <button id="btn_result" :disabled="areQesAnswered" @click="showResult">Check</button>
     </div>
 </template>

@@ -27,3 +27,13 @@ export async function getQuestions(id) {
     return null
   }
 }
+
+export async function getPoints(id) {
+  try {
+    let res = await apiClient.get(`/points/${id}`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
