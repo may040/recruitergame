@@ -1,21 +1,26 @@
 <script setup>
 import Question from './Question.vue';
+import { inject } from 'vue';
 
-const props = defineProps(['isrecruiterDataSaved', 'questions', 'color'])
+const props = defineProps(['isrecruiterDataSaved', 'questions', 'color', 'achievedPoints'])
 
+const areQesAnswered = inject('areQesAnswered')
 
+const emit = defineEmits(['eva-rec-input'])
 
+function showResult() {
+    emit('eva-rec-input')
+}
 </script>
 
 <template>
     <div class="question_list" v-show="props.isrecruiterDataSaved">
-        <Question class="question" v-for="(qes, index) in props.questions" :key="index" :question="qes"
+        <Question v-for="(qes, index) in props.questions" :key="index" :question="qes"
             :style="{ borderImage: props.color[index] }" :index="index">
-
-
         </Question>
 
-
+        <p v-if="areQesAnswered">{{ props.achievedPoints }} of 5 points</p>
+        <button id="btn_result" :disabled="areQesAnswered" @click="showResult">Check</button>
     </div>
 </template>
 
@@ -29,36 +34,43 @@ const props = defineProps(['isrecruiterDataSaved', 'questions', 'color'])
 }
 
 
-.question {
-    margin: 12px auto;
-    width: 400px;
-    padding: 16px;
 
-    border-radius: 10px;
+#btn_result {
+    margin-top: 15px;
+    padding: 9px 32px;
 
-    color: black;
+    border: none;
+    border-radius: 6px;
 
-    background: rgba(255, 255, 255, 0.14);
-
-    border: 5px solid;
-
-
-    border-image: linear-gradient(135deg,
+    background: linear-gradient(135deg,
             rgb(28, 28, 224),
-            rgb(26, 198, 158)) 1;
+            rgb(26, 198, 158));
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
 
     box-shadow:
-        0 6px 10px rgba(0, 0, 0, 0.25),
-        0 18px 40px rgba(0, 0, 0, 0.35);
-
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+        0 6px 18px rgba(28, 28, 224, 0.35),
+        0 3px 8px rgba(26, 198, 158, 0.25);
 }
 
-.question:hover {
-    transform: translateY(-6px);
+#btn_result:hover {
+    transform: translateY(-3px);
 
     box-shadow:
-        0 10px 18px rgba(0, 0, 0, 0.3),
-        0 25px 60px rgba(0, 0, 0, 0.45);
+        0 10px 24px rgba(28, 28, 224, 0.45),
+        0 6px 12px rgba(26, 198, 158, 0.35);
+}
+
+#btn_result:active {
+    transform: translateY(1px);
 }
 </style>

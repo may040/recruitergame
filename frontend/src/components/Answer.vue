@@ -1,14 +1,17 @@
 <script setup>
-import { inject } from 'vue';
+import { inject, watch } from 'vue';
 
 const props = defineProps(['answer', 'index'])
-const areQesAnswered = inject('areQesAnswered')
 const selectedAnswers = inject('selectedAnswers')
+const areQesAnswered = inject('areQesAnswered')
+
+
+
 
 </script>
 
 <template>
-    <div>
+    <div class="answer">
         <label>
             <input class="r_answer" type="radio" :disabled="areQesAnswered" :value="props.answer.text"
                 v-model="selectedAnswers[props.index]">{{
@@ -17,7 +20,16 @@ const selectedAnswers = inject('selectedAnswers')
     </div>
 </template>
 
+
+
+
+
 <style>
+#correctAnswer {
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
 .r_answer {
     appearance: none;
     -webkit-appearance: none;
