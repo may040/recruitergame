@@ -4,15 +4,13 @@ import de.kit.recruitergame.Repository.AnswerRepository;
 import de.kit.recruitergame.Repository.QuestionRepository;
 import de.kit.recruitergame.Repository.RecruiterAnswerRepository;
 import de.kit.recruitergame.Repository.RecruiterRepository;
-import de.kit.recruitergame.dto.AnswerDTO;
-import de.kit.recruitergame.dto.QuesResultDTO;
-import de.kit.recruitergame.dto.QuestionDTO;
-import de.kit.recruitergame.dto.RecruiterAnswerDTO;
+import de.kit.recruitergame.dto.*;
 import de.kit.recruitergame.model.Answer;
 import de.kit.recruitergame.model.Question;
 import de.kit.recruitergame.model.Recruiter;
 import de.kit.recruitergame.model.RecruiterAnswer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -143,5 +141,14 @@ public class RecruiterService {
         }
         results.forEach(x->System.out.println(x.isAnsweredCorrect()));
         return results;
+    }
+
+    public List<RecruiterResultDTO>  getRecruiterList() {
+        List<Recruiter> allRecruiters = recruiterRepository.findAll(Sort.by(Sort.Order.desc("achievedPoints")));
+        List<RecruiterResultDTO> allRecruitersDTO = new ArrayList<>();
+        allRecruiters.forEach(recruiter -> {
+            allRecruitersDTO.add(new RecruiterResultDTO(recruiter.getName(),recruiter.getCompany(),recruiter.getAchievedPoints()));
+        });
+    return allRecruitersDTO;
     }
 }
