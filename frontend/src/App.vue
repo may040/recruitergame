@@ -70,7 +70,7 @@ provide('evaRecAnswers', evaRecAnswers)
   background:
     linear-gradient(rgba(28, 28, 224, 0.6), rgba(26, 198, 158, 0.6));
   width: 100%;
-  min-height: 97vh;
+  min-height: 99vh;
   display: flex;
   flex-direction: column;
   justify-content: center;

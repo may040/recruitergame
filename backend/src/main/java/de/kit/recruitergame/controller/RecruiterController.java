@@ -1,9 +1,6 @@
 package de.kit.recruitergame.controller;
 
-import de.kit.recruitergame.dto.QuesResultDTO;
-import de.kit.recruitergame.dto.QuestionDTO;
-import de.kit.recruitergame.dto.RecruiterAnswerDTO;
-import de.kit.recruitergame.dto.RecruiterResultDTO;
+import de.kit.recruitergame.dto.*;
 import de.kit.recruitergame.model.Recruiter;
 import de.kit.recruitergame.service.RecruiterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +52,11 @@ public class RecruiterController {
     @GetMapping("/recruiter_list")
     public List<RecruiterResultDTO> getRecruiterList(){
          return recruiterService.getRecruiterList();
+    }
+
+    @GetMapping("/recruiter_data/{recID}")
+    public RecruiterDTO getRecruiterData(@PathVariable Long recID){
+        return recruiterService.getRecData(recID);
     }
 
 }

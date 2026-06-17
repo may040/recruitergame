@@ -57,3 +57,23 @@ export async function saveRecruiterAnswers(recruiterAnswers) {
     return null
   }
 }
+
+export async function getRanking() {
+  try {
+    const res = await apiClient.get(`/recruiter_list`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
+
+export async function getRecData(id) {
+  try {
+    const res = await apiClient.get(`/recruiter_data/${id}`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}

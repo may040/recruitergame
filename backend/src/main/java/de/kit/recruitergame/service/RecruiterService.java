@@ -151,4 +151,10 @@ public class RecruiterService {
         });
     return allRecruitersDTO;
     }
+
+    public RecruiterDTO getRecData(Long recID) {
+        Recruiter recruiter = recruiterRepository.findById(recID).get();
+        RecruiterDTO recruiterDTO = new RecruiterDTO(recruiter.getName(), recruiter.getCompany(), recruiter.getAchievedPoints());
+        return recruiterDTO;
+    }
 }

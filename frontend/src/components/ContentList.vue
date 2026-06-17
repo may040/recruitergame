@@ -2,6 +2,7 @@
 import Question from './Question.vue';
 import { inject, watch, ref } from 'vue';
 import { getPoints } from '@/services/recruiterService'
+import RankingRecs from './RankingRecs.vue';
 
 const props = defineProps(['isrecruiterDataSaved', 'questions', 'color', 'recruiterID'])
 
@@ -27,12 +28,19 @@ watch(areQesAnswered, async (n, o) => {
             :style="{ borderImage: props.color[index] }" :index="index">
         </Question>
 
-        <p v-if="areQesAnswered">{{ achievedPoints }} of 5 points</p>
+        <p v-if="areQesAnswered" id="result">{{ achievedPoints }} of 5 points</p>
+        <RankingRecs v-if="areQesAnswered" :recruiterID="recruiterID"></RankingRecs>
         <button id="btn_result" :disabled="areQesAnswered" @click="showResult">Check</button>
     </div>
 </template>
 
 <style>
+#result {
+    text-align: center;
+    font-weight: 700;
+    color: rgb(92, 90, 90);
+}
+
 .question_list {
     display: flex;
     flex-direction: column;
