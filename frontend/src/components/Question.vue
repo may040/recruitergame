@@ -19,8 +19,8 @@ const areQesAnswered = inject('areQesAnswered')
             <Answer v-for="(answer, i) in props.question.answers" :key="i" :index="props.index" :answer="answer">
             </Answer>
         </div>
-        <p id="correctAnswer" v-if="areQesAnswered && areResultsLoaded">Korrekte
-            Antwort: {{
+        <p id="correctAnswer" v-if="areQesAnswered && areResultsLoaded">Correct
+            Answer: {{
                 evaRecAnswers[props.index].correctAnswer
             }}
         </p>

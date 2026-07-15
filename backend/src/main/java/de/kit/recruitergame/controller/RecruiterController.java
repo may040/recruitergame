@@ -25,8 +25,6 @@ public class RecruiterController {
     @PostMapping("/add")
     public Long addRecruiter(@RequestBody Recruiter rec){
         return recruiterService.addRecruiter(rec);
-
-
     }
 
     @GetMapping("/{recID}")
